@@ -1,0 +1,18 @@
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'ca.cutterslade.analyze'
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'ca.cutterslade.analyze'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.2.1'
+    }
+}
