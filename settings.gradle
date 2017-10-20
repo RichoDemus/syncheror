@@ -1,0 +1,4 @@
+rootProject.name = 'syncheror'
+
+include ':core'
+include ':docker'

@@ -1,0 +1,31 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+apply plugin: 'java'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+task copyDependencies(type: Copy) {
+    from configurations.compile
+    into 'build/dependencies'
+}
+
+task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
+    description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
+    dockerFile = file('./Dockerfile')
+    inputDir = file('.')
+    def customTag = project.hasProperty('tag') ? project.tag : 'latest'
+    tag = "richodemus/syncheror:${customTag}"
+}
+
+dependencies {
+    compile project(':core')
+    permitUnusedDeclared project(':core')
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.2.0'
+    }
+}
