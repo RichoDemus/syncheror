@@ -9,9 +9,10 @@ import org.apache.kafka.common.serialization.StringSerializer
 import java.io.Closeable
 import java.util.Properties
 
-internal class Producer(private val topic: String) : Closeable {
+internal class Producer : Closeable {
     private val mapper = jacksonObjectMapper()
     private val producer: KafkaProducer<String, String>
+    private val topic = Settings().kafkaTopic
 
     init {
         val props = Properties()

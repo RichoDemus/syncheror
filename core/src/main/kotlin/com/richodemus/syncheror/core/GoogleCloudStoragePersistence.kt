@@ -13,20 +13,20 @@ import javax.inject.Singleton
 
 
 @Singleton
-class GoogleCloudStoragePersistence(project:String = System.getProperty("chronicler.gcs.project") ?: throw IllegalArgumentException("Missing property GCS_PROJECT/chronicler.gcs.project"),
-                                    private val bucket:String = System.getProperty("chronicler.gcs.bucket") ?: throw IllegalArgumentException("Missing property GCS_BUCKET/chronicler.gcs.bucket")) {
+class GoogleCloudStoragePersistence {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val directory = "events/v1/"
     private val mapper = jacksonObjectMapper()
+    private val settings = Settings()
 
     private val service = StorageOptions.newBuilder()
-            .setProjectId(project)
+            .setProjectId(settings.gcsProject)
             .build()
             .service
 
     fun getNumberOfEvents(): Int {
-        return service.list(bucket)
+        return service.list(settings.gcsBucket)
                 .iterateAll().count()
     }
 
@@ -52,7 +52,7 @@ class GoogleCloudStoragePersistence(project:String = System.getProperty("chronic
                 }
             }).start()
 
-            return service.list(bucket)
+            return service.list(settings.gcsBucket)
                     .iterateAll()
                     .filter { it.blobId.name.startsWith(directory) }
                     .map {
@@ -78,7 +78,7 @@ class GoogleCloudStoragePersistence(project:String = System.getProperty("chronic
     }
 
     fun persist(event: Event) {
-        service.create(BlobInfo.newBuilder(BlobId.of(bucket, "$directory${event.page.toString()}")).build(), event.toDto().toJSONString().toByteArray())
+        service.create(BlobInfo.newBuilder(BlobId.of(settings.gcsBucket, "$directory${event.page.toString()}")).build(), event.toDto().toJSONString().toByteArray())
     }
 
 

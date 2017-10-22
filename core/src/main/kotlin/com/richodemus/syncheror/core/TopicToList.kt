@@ -9,9 +9,10 @@ import java.util.UUID
 
 private val logger = LoggerFactory.getLogger("topicToList")!!
 
-internal fun topicToList(topic: String): List<Pair<Long, String>> {
+internal fun topicToList(): List<Pair<Long, String>> {
+    val settings = Settings()
     val props = Properties()
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.kafkaTopic)
     props.put(ConsumerConfig.CLIENT_ID_CONFIG, "topic-to-list-${UUID.randomUUID()}")
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
@@ -19,7 +20,7 @@ internal fun topicToList(topic: String): List<Pair<Long, String>> {
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
     val consumer = KafkaConsumer<String, String>(props)
 
-    consumer.subscribe(listOf(topic))
+    consumer.subscribe(listOf(settings.kafkaTopic))
 
     val events = mutableListOf<Pair<Long, String>>()
     var numberOfEmptyPolls = 0
@@ -46,6 +47,6 @@ internal fun topicToList(topic: String): List<Pair<Long, String>> {
 }
 
 fun main(args: Array<String>) {
-    val list = topicToList("events")
+    val list = topicToList()
     logger.info("Done, got ${list.size} events")
 }

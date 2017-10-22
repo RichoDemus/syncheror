@@ -11,6 +11,9 @@ private val logger = LoggerFactory.getLogger("Main")!!
 private val mapper = jacksonObjectMapper()
 
 fun main(args: Array<String>) {
+    val settings = Settings()
+    println(settings.toString())
+
     val executor = ScheduledThreadPoolExecutor(1, ThreadFactoryBuilder()
             .setNameFormat("sync-thread-%s")
             .setDaemon(false)
@@ -18,19 +21,19 @@ fun main(args: Array<String>) {
     Runtime.getRuntime().addShutdownHook(Thread(Runnable { executor.shutdown() }))
     val persister = GoogleCloudStoragePersistence()
 
-    val topic = "events"
+    settings.kafkaTopic
 
     val runnable = Runnable {
         try {
             logger.info("Time to sync!")
-            val eventsInKafka = topicToList(topic)
+            val eventsInKafka = topicToList()
                     .map { it.second }
                     .map { mapper.readValue(it, EventDTO::class.java) }
                     .map { it.toEvent() }
             val eventsInGcs = persister.readEvents().asSequence().toList()
 
             logger.info("Got ${eventsInKafka.size} events from Kafka and ${eventsInGcs.size} events from GCS")
-            Producer(topic).use { producer ->
+            Producer().use { producer ->
                 IntRange(0, Math.max(eventsInKafka.size, eventsInGcs.size) - 1).forEach { i ->
                     val kafkaEvent = eventsInKafka.getOrNull(i)
                     val gcsEvent = eventsInGcs.getOrNull(i)
@@ -59,4 +62,3 @@ fun main(args: Array<String>) {
 
     executor.scheduleAtFixedRate(runnable, 0L, 1, DAYS)
 }
-

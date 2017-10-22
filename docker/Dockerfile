@@ -4,11 +4,10 @@ COPY build/dependencies /syncheror/jars
 WORKDIR /syncheror
 ENTRYPOINT []
 CMD java \
--Dchronicler.storage=$STORAGE \
--Dchronicler.gcs.project=$GCS_PROJECT \
--Dchronicler.gcs.bucket=$GCS_BUCKET \
--Dchronicler.saveToDisk=$SAVE_TO_DISK \
--Dchronicler.dataDir=$DATA_DIR \
+-Dsyncheror.gcs.project=$GCS_PROJECT \
+-Dsyncheror.gcs.bucket=$GCS_BUCKET \
+-Dsyncheror.kafka.bootstrapServers=$KAFKA_SERVERS \
+-Dsyncheror.kafka.topic=$KAFKA_TOPIC \
 -XX:+UseConcMarkSweepGC \
 -XX:+CMSParallelRemarkEnabled \
 -server \
