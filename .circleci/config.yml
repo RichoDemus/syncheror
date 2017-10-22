@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    machine:
+      services:
+        - docker
+    branches:
+      only:
+        - master
+    steps:
+      - checkout
+      - run: ./build.sh
+      - run: |
+                docker login -u $DOCKER_USER -p $DOCKER_PASS
+                docker push richodemus/syncheror:latest
