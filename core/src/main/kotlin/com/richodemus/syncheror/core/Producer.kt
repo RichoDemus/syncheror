@@ -16,7 +16,8 @@ internal class Producer : Closeable {
 
     init {
         val props = Properties()
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+        val settings = Settings()
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.kafkaServers)
         props.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer")
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
