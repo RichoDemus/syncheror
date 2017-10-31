@@ -12,7 +12,7 @@ private val logger = LoggerFactory.getLogger("topicToList")!!
 internal fun topicToList(): List<Pair<Long, String>> {
     val settings = Settings()
     val props = Properties()
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.kafkaTopic)
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.kafkaServers)
     props.put(ConsumerConfig.CLIENT_ID_CONFIG, "topic-to-list-${UUID.randomUUID()}")
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
