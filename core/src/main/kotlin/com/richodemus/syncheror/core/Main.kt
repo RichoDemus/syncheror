@@ -44,6 +44,7 @@ fun main(args: Array<String>) {
                     }
                     if (gcsEvent == null) {
                         logger.info("$kafkaEvent missing from GCS, adding it, ish...")
+                        persister.persist(kafkaEvent)
                     }
                     if (gcsEvent != null && kafkaEvent != null) {
                         if (kafkaEvent != gcsEvent) {
