@@ -2,6 +2,9 @@ package com.richodemus.syncheror.core
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import com.richodemus.syncheror.core.SyncDirection.BIDIRECTIONAL
+import com.richodemus.syncheror.core.SyncDirection.GCS_TO_KAFKA
+import com.richodemus.syncheror.core.SyncDirection.KAFKA_TO_GCS
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit.DAYS
@@ -39,13 +42,23 @@ fun main(args: Array<String>) {
                     val gcsEvent = eventsInGcs.getOrNull(i)
 
                     if (kafkaEvent == null) {
-                        logger.info("$gcsEvent missing from Kafka, adding it")
-                        producer.send(gcsEvent!!.id, gcsEvent)
+                        if (settings.syncDirection == GCS_TO_KAFKA || settings.syncDirection == BIDIRECTIONAL) {
+                            logger.info("$gcsEvent missing from Kafka, adding it")
+                            producer.send(gcsEvent!!.id, gcsEvent)
+                        } else {
+                            logger.info("$gcsEvent missing from Kafka")
+                        }
                     }
+
                     if (gcsEvent == null) {
-                        logger.info("$kafkaEvent missing from GCS, adding it")
-                        persister.persist(kafkaEvent!!)
+                        if (settings.syncDirection == KAFKA_TO_GCS || settings.syncDirection == BIDIRECTIONAL) {
+                            logger.info("$kafkaEvent missing from GCS, adding it")
+                            persister.persist(kafkaEvent!!)
+                        } else {
+                            logger.info("$kafkaEvent missing from GCS")
+                        }
                     }
+
                     if (gcsEvent != null && kafkaEvent != null) {
                         if (kafkaEvent != gcsEvent) {
                             logger.warn("Event mismatch: $kafkaEvent, $gcsEvent")

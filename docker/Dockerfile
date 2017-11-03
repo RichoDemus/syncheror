@@ -8,6 +8,7 @@ CMD java \
 -Dsyncheror.gcs.bucket=$GCS_BUCKET \
 -Dsyncheror.kafka.bootstrapServers=$KAFKA_SERVERS \
 -Dsyncheror.kafka.topic=$KAFKA_TOPIC \
+-Dsyncheror.syncDirection=$SYNC_DIRECTION \
 -XX:+UseConcMarkSweepGC \
 -XX:+CMSParallelRemarkEnabled \
 -server \
