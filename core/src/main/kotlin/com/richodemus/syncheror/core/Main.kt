@@ -43,8 +43,8 @@ fun main(args: Array<String>) {
                         producer.send(gcsEvent!!.id, gcsEvent)
                     }
                     if (gcsEvent == null) {
-                        logger.info("$kafkaEvent missing from GCS, adding it, ish...")
-                        persister.persist(kafkaEvent)
+                        logger.info("$kafkaEvent missing from GCS, adding it")
+                        persister.persist(kafkaEvent!!)
                     }
                     if (gcsEvent != null && kafkaEvent != null) {
                         if (kafkaEvent != gcsEvent) {
