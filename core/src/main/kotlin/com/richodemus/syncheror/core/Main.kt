@@ -51,11 +51,12 @@ fun main(args: Array<String>) {
                     }
 
                     if (gcsEvent == null) {
+                        val eventWithCorrectPage = kafkaEvent!!.copy(page = i.toLong().inc())
                         if (settings.syncDirection == KAFKA_TO_GCS || settings.syncDirection == BIDIRECTIONAL) {
-                            logger.info("$kafkaEvent missing from GCS, adding it")
-                            persister.persist(kafkaEvent!!)
+                            logger.info("$eventWithCorrectPage missing from GCS, adding it")
+                            persister.persist(eventWithCorrectPage)
                         } else {
-                            logger.info("$kafkaEvent missing from GCS")
+                            logger.info("$eventWithCorrectPage missing from GCS")
                         }
                     }
 
