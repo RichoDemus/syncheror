@@ -61,8 +61,9 @@ fun main(args: Array<String>) {
                     }
 
                     if (gcsEvent != null && kafkaEvent != null) {
-                        if (kafkaEvent != gcsEvent) {
-                            logger.warn("Event mismatch: $kafkaEvent, $gcsEvent")
+                        val eventWithCorrectPage = kafkaEvent.copy(page = i.toLong().inc())
+                        if (eventWithCorrectPage != gcsEvent) {
+                            logger.warn("Event mismatch: $eventWithCorrectPage, $gcsEvent")
                             executor.shutdown()
                             return@Runnable
                         }
