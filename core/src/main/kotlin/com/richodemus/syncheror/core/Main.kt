@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
             .build())
     Runtime.getRuntime().addShutdownHook(Thread(Runnable { executor.shutdown() }))
 
-    val bidirectionalSyncer = BidirectionalSyncer { executor.shutdown() }
+    val bidirectionalSyncer = BidirectionalSyncer(settings.syncDirection) { executor.shutdown() }
 
     executor.scheduleAtFixedRate(bidirectionalSyncer, 0L, 1, DAYS)
 }

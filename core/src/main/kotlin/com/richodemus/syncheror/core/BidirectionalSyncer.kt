@@ -3,13 +3,21 @@ package com.richodemus.syncheror.core
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 
-internal class BidirectionalSyncer(private val shutdown: () -> Unit) : Runnable {
+internal class BidirectionalSyncer(private val syncDirection: SyncDirection, private val shutdown: () -> Unit) : Runnable {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val mapper = jacksonObjectMapper()
     private val persister = GoogleCloudStoragePersistence()
-    private val settings = Settings()
 
     override fun run() {
+        try {
+            syncOnce()
+        } catch (e: Exception) {
+            shutdown()
+            throw e
+        }
+    }
+
+    private fun syncOnce() {
         try {
             logger.info("Time to sync!")
             val eventsInKafka = topicToList()
@@ -25,7 +33,7 @@ internal class BidirectionalSyncer(private val shutdown: () -> Unit) : Runnable 
                     val gcsEvent = eventsInGcs.getOrNull(i)
 
                     if (kafkaEvent == null) {
-                        if (settings.syncDirection == SyncDirection.GCS_TO_KAFKA || settings.syncDirection == SyncDirection.BIDIRECTIONAL) {
+                        if (syncDirection == SyncDirection.GCS_TO_KAFKA || syncDirection == SyncDirection.BIDIRECTIONAL) {
                             logger.info("$gcsEvent missing from Kafka, adding it")
                             producer.send(gcsEvent!!.id, gcsEvent)
                         } else {
@@ -35,7 +43,7 @@ internal class BidirectionalSyncer(private val shutdown: () -> Unit) : Runnable 
 
                     if (gcsEvent == null) {
                         val eventWithCorrectPage = kafkaEvent!!.copy(page = i.toLong().inc())
-                        if (settings.syncDirection == SyncDirection.KAFKA_TO_GCS || settings.syncDirection == SyncDirection.BIDIRECTIONAL) {
+                        if (syncDirection == SyncDirection.KAFKA_TO_GCS || syncDirection == SyncDirection.BIDIRECTIONAL) {
                             logger.info("$eventWithCorrectPage missing from GCS, adding it")
                             persister.persist(eventWithCorrectPage)
                         } else {
@@ -46,9 +54,9 @@ internal class BidirectionalSyncer(private val shutdown: () -> Unit) : Runnable 
                     if (gcsEvent != null && kafkaEvent != null) {
                         val eventWithCorrectPage = kafkaEvent.copy(page = i.toLong().inc())
                         if (eventWithCorrectPage != gcsEvent) {
-                            logger.warn("Event mismatch: $eventWithCorrectPage, $gcsEvent")
-                            shutdown()
-                            return@run
+                            val msg = "Event mismatch: $eventWithCorrectPage, $gcsEvent"
+                            logger.warn(msg)
+                            throw IllegalStateException(msg)
                         }
                     }
                 }
