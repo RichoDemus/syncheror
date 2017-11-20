@@ -12,7 +12,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
         classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.2.1'
     }
 }

@@ -1,8 +1,8 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-runtime:1.1.51'
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.51'
+    compile 'org.jetbrains.kotlin:kotlin-runtime:1.1.60'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.1.60'
     compile 'org.jetbrains:annotations'
 
     compile 'javax.inject:javax.inject:1'
@@ -11,13 +11,13 @@ dependencies {
     permitUnusedDeclared 'ch.qos.logback:logback-classic:1.2.3'
 
 
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.1'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.1'
-    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.1'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.2'
+    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2'
 
-    compile 'com.google.cloud:google-cloud-storage:1.8.0'
+    compile 'com.google.cloud:google-cloud-storage:1.12.0'
     compile 'com.google.api:gax'
-    compile 'com.google.guava:guava:23.2-jre'
+    compile 'com.google.guava:guava:23.4-jre'
 
     compile 'org.apache.kafka:kafka-clients:1.0.0'
 }
@@ -31,6 +31,6 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.60'
     }
 }
