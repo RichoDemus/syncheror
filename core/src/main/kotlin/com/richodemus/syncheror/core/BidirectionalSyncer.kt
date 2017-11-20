@@ -17,7 +17,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
         }
     }
 
-    private fun syncOnce() {
+    internal fun syncOnce() : Int {
         try {
             logger.info("Time to sync!")
             val eventsInKafka = topicToList()
@@ -27,6 +27,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
             val eventsInGcs = persister.readEvents().asSequence().toList()
 
             logger.info("Got ${eventsInKafka.size} events from Kafka and ${eventsInGcs.size} events from GCS")
+            var lastProcessedPage = -1
             Producer().use { producer ->
                 IntRange(0, Math.max(eventsInKafka.size, eventsInGcs.size) - 1).forEach { i ->
                     val kafkaEvent = eventsInKafka.getOrNull(i)
@@ -39,6 +40,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
                         } else {
                             logger.info("$gcsEvent missing from Kafka")
                         }
+                        gcsEvent?.page?.toInt()?.let { lastProcessedPage = it }
                     }
 
                     if (gcsEvent == null) {
@@ -49,6 +51,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
                         } else {
                             logger.info("$eventWithCorrectPage missing from GCS")
                         }
+                        eventWithCorrectPage.page?.toInt()?.let { lastProcessedPage = it }
                     }
 
                     if (gcsEvent != null && kafkaEvent != null) {
@@ -59,11 +62,20 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
                             throw IllegalStateException(msg)
                         }
                     }
+
+                    if (kafkaEvent != null) {
+                        val eventWithCorrectPage = kafkaEvent!!.copy(page = i.toLong().inc())
+                        eventWithCorrectPage.page?.toInt()?.let { lastProcessedPage = it }
+                    }
+                    if (gcsEvent != null) {
+                        gcsEvent.page?.toInt()?.let { lastProcessedPage = it }
+                    }
                 }
             }
             logger.info("Sync done")
+            return lastProcessedPage
         } catch (e: Exception) {
-            logger.error("Sync run failed", e)
+            throw IllegalStateException("Sync run failed", e)
         }
     }
 }

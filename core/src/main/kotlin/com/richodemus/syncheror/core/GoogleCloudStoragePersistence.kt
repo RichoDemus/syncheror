@@ -2,7 +2,6 @@ package com.richodemus.syncheror.core
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.cloud.storage.BlobId
-import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
@@ -78,9 +77,20 @@ class GoogleCloudStoragePersistence {
     }
 
     fun persist(event: Event) {
-        service.create(BlobInfo.newBuilder(BlobId.of(settings.gcsBucket, "$directory${event.page.toString()}")).build(), event.toDto().toJSONString().toByteArray())
+        val filename = "$directory${event.page.toString()}"
+        val eventBytes = event.toDto().toJSONString().toByteArray()
+        val blob = BlobId.of(settings.gcsBucket, filename)
+        if (exists(blob)) {
+            logger.info("File $filename already exists in GCS, skipping...")
+            return
+        }
+        //service.create(BlobInfo.newBuilder(blob).build(), eventBytes)
+        logger.info("Would've persisted $event")
     }
 
+    private fun exists(blob: BlobId): Boolean {
+        return service.get(blob) != null
+    }
 
     private fun Event.toDto(): EventDTO {
         val page = this.page ?: throw IllegalStateException("Can't save event without page")
