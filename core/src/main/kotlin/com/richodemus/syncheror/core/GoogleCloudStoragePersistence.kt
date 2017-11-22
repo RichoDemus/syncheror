@@ -2,6 +2,7 @@ package com.richodemus.syncheror.core
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.cloud.storage.BlobId
+import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
@@ -84,8 +85,7 @@ class GoogleCloudStoragePersistence {
             logger.info("File $filename already exists in GCS, skipping...")
             return
         }
-        //service.create(BlobInfo.newBuilder(blob).build(), eventBytes)
-        logger.info("Would've persisted $event")
+        service.create(BlobInfo.newBuilder(blob).build(), eventBytes)
     }
 
     private fun exists(blob: BlobId): Boolean {
