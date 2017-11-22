@@ -9,6 +9,7 @@ CMD java \
 -Dsyncheror.kafka.bootstrapServers=$KAFKA_SERVERS \
 -Dsyncheror.kafka.topic=$KAFKA_TOPIC \
 -Dsyncheror.syncDirection=$SYNC_DIRECTION \
+-Dsyncheror.newImplementation=$NEW_IMPLEMENTATION \
 -XX:+UseConcMarkSweepGC \
 -XX:+CMSParallelRemarkEnabled \
 -server \
