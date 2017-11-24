@@ -64,7 +64,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
                     }
 
                     if (kafkaEvent != null) {
-                        val eventWithCorrectPage = kafkaEvent!!.copy(page = i.toLong().inc())
+                        val eventWithCorrectPage = kafkaEvent.copy(page = i.toLong().inc())
                         eventWithCorrectPage.page?.toInt()?.let { lastProcessedPage = it }
                     }
                     if (gcsEvent != null) {
