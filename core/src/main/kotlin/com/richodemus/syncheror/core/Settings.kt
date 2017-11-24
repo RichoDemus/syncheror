@@ -19,9 +19,8 @@ internal class Settings {
     val newImplementation = System.getProperty("syncheror.newImplementation")?.toBoolean() ?:
             throw IllegalArgumentException("Missing property NEW_IMPLEMENTATION/syncheror.newImplementation")
 
-    override fun toString(): String {
-        return "Settings(gcsProject='$gcsProject', gcsBucket='$gcsBucket', kafkaServers='$kafkaServers', kafkaTopic='$kafkaTopic', syncDirection=$syncDirection, newImplementation='$newImplementation')"
-    }
+    override fun toString() =
+            "Settings(gcsProject='$gcsProject', gcsBucket='$gcsBucket', kafkaServers='$kafkaServers', kafkaTopic='$kafkaTopic', syncDirection=$syncDirection, newImplementation='$newImplementation')"
 }
 
 internal enum class SyncDirection {

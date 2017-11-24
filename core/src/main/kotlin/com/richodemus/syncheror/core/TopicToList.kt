@@ -24,7 +24,7 @@ internal fun topicToList(): List<Pair<Long, String>> {
 
     val events = mutableListOf<Pair<Long, String>>()
     var numberOfEmptyPolls = 0
-    if(logger.isDebugEnabled){
+    if (logger.isDebugEnabled) {
         Thread({
             while (numberOfEmptyPolls < 5) {
                 logger.debug("Read ${events.size} messages with $numberOfEmptyPolls empty polls")

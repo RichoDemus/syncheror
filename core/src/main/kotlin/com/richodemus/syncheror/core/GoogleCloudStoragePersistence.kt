@@ -25,13 +25,8 @@ class GoogleCloudStoragePersistence {
             .build()
             .service
 
-    fun getNumberOfEvents(): Int {
-        return service.list(settings.gcsBucket)
-                .iterateAll().count()
-    }
-
     fun readEvents(): Iterator<Event> {
-        val threads = Runtime.getRuntime().availableProcessors()*100
+        val threads = Runtime.getRuntime().availableProcessors() * 100
         val executor = Executors.newFixedThreadPool(threads)
         var run = true
         val eventsStarted = LongAdder()
@@ -42,10 +37,10 @@ class GoogleCloudStoragePersistence {
 
             Thread(Runnable {
                 while (run) {
-                    if(eventsStarted.sum() > 0 || eventsDownloaded.sum() > 0) {
+                    if (eventsStarted.sum() > 0 || eventsDownloaded.sum() > 0) {
                         val downloaded = eventsDownloaded.sum()
                         val eventsPerSecond = (downloaded - eventsDownloadedAtLastPrint)
-                        logger.info("Event downloads started: ${eventsStarted.sum()}, Events downloaded: ${eventsDownloaded.sum()}, Events per second: ${eventsPerSecond}")
+                        logger.info("Event downloads started: ${eventsStarted.sum()}, Events downloaded: ${eventsDownloaded.sum()}, Events per second: $eventsPerSecond")
                         eventsDownloadedAtLastPrint = downloaded
                     }
                     Thread.sleep(1_000L)
@@ -88,9 +83,7 @@ class GoogleCloudStoragePersistence {
         service.create(BlobInfo.newBuilder(blob).build(), eventBytes)
     }
 
-    private fun exists(blob: BlobId): Boolean {
-        return service.get(blob) != null
-    }
+    private fun exists(blob: BlobId) = service.get(blob) != null
 
     private fun Event.toDto(): EventDTO {
         val page = this.page ?: throw IllegalStateException("Can't save event without page")

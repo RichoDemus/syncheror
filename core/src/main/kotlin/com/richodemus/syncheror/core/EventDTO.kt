@@ -14,4 +14,4 @@ data class EventDTO
 fun EventDTO.toEvent() = Event(this.id, this.type, this.page, this.data)
 
 private val mapper = ObjectMapper().apply { registerModule(KotlinModule()) }
-fun EventDTO.toJSONString() = mapper.writeValueAsString(this)
+fun EventDTO.toJSONString() = mapper.writeValueAsString(this)!!

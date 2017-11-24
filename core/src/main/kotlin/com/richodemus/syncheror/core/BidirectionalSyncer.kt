@@ -17,7 +17,7 @@ internal class BidirectionalSyncer(private val syncDirection: SyncDirection, pri
         }
     }
 
-    internal fun syncOnce() : Int {
+    internal fun syncOnce(): Int {
         try {
             logger.info("Time to sync!")
             val eventsInKafka = topicToList()

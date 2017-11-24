@@ -58,7 +58,7 @@ internal class Consumer(kafkaServers: String, topic: String, private val message
         Runtime.getRuntime().addShutdownHook(Thread { stop() })
     }
 
-    fun stop() {
+    private fun stop() {
         running = false
         consumer.wakeup()
     }
