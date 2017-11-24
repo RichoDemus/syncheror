@@ -3,3 +3,10 @@
 
 A tool to sync data between Google Cloud Storage and Kafka  
 a work in progress
+
+## Development
+Compile and run tests  
+`./gradlew`
+
+See the dependency graph of all the gradle tasks  
+`./gradlew taskTree build`
