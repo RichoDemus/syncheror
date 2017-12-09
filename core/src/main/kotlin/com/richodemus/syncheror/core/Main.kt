@@ -7,6 +7,9 @@ import java.util.concurrent.TimeUnit.DAYS
 
 private val logger = LoggerFactory.getLogger("Main")!!
 
+/**
+ * ./kafka_2.11-1.0.0/bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic events --partitions 1 --replication-factor 1 --config retention.ms=-1
+ */
 fun main(args: Array<String>) {
     val settings = Settings()
     println(settings.toString())
