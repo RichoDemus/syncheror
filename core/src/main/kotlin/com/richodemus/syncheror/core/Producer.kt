@@ -1,16 +1,14 @@
 package com.richodemus.syncheror.core
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.serialization.StringSerializer
 import java.io.Closeable
-import java.util.Properties
+import java.util.*
 
 internal class Producer : Closeable {
-    private val mapper = jacksonObjectMapper()
     private val producer: KafkaProducer<String, String>
     private val topic = Settings().kafkaTopic
 
@@ -25,9 +23,8 @@ internal class Producer : Closeable {
         producer = KafkaProducer(props)
     }
 
-    fun send(key: String, message: Event): RecordMetadata? {
-        val json = mapper.writeValueAsString(message)
-        val record: ProducerRecord<String, String> = ProducerRecord(topic, key, json)
+    fun send(event: Event): RecordMetadata? {
+        val record: ProducerRecord<String, String> = ProducerRecord(topic, event.key.value, event.data.value)
 
         return producer.send(record).get()
     }

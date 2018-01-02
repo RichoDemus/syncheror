@@ -1,20 +1,17 @@
 package com.richodemus.syncheror.core
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.errors.WakeupException
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
-import java.util.Properties
-import java.util.UUID
+import java.util.*
 
 /**
  * Helper class to consume messages from a topic
  */
-internal class Consumer(kafkaServers: String, topic: String, private val messageListener: (Long, Event) -> Unit) {
+internal class Consumer(kafkaServers: String, topic: String, private val messageListener: (Event) -> Unit) {
     private val logger = LoggerFactory.getLogger(javaClass.name)
-    private val mapper = jacksonObjectMapper()
     private val consumer: KafkaConsumer<String, String>
     private var running = true
 
@@ -43,11 +40,8 @@ internal class Consumer(kafkaServers: String, topic: String, private val message
 
                     records.map {
                         logger.debug("Received: {}: {}", it.key(), it.value())
-                        Pair(it.offset(), it.value())
+                        messageListener(Event(Offset(it.offset()), Key(it.key()), Data(it.value())))
                     }
-                            .map { Pair(it.first, mapper.readValue(it.second, EventDTO::class.java)) }
-                            .map { Pair(it.first, it.second.toEvent()) }
-                            .forEach { messageListener(it.first, it.second) }
                 }
             } catch (e: WakeupException) {
                 logger.info("consumer.wakeup() called, Kafka consumer shutting down")

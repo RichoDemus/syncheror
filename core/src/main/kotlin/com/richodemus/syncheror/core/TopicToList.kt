@@ -4,12 +4,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
-import java.util.Properties
-import java.util.UUID
+import java.util.*
 
 private val logger = LoggerFactory.getLogger("topicToList")!!
 
-internal fun topicToList(): List<Pair<Long, String>> {
+internal fun topicToList(): List<Event> {
     val settings = Settings()
     val props = Properties()
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, settings.kafkaServers)
@@ -22,7 +21,7 @@ internal fun topicToList(): List<Pair<Long, String>> {
 
     consumer.subscribe(listOf(settings.kafkaTopic))
 
-    val events = mutableListOf<Pair<Long, String>>()
+    val events = mutableListOf<Event>()
     var numberOfEmptyPolls = 0
     if (logger.isDebugEnabled) {
         Thread({
@@ -32,16 +31,18 @@ internal fun topicToList(): List<Pair<Long, String>> {
             }
         }).start()
     }
+    logger.info("Downloading all events from kafka...")
     while (numberOfEmptyPolls < 5) {
         val records = consumer.poll(1000)
 
         if (records.isEmpty) {
             numberOfEmptyPolls++
         } else {
-            records.map { Pair(it.offset(), it.value()) }.forEach { events.add(it) }
+            records.map { Event(Offset(it.offset()), Key(it.key()), Data(it.value())) }.forEach { events.add(it) }
             numberOfEmptyPolls = 0
         }
     }
+    logger.info("Got ${events.size} from kafka")
     consumer.close()
     return events
 }

@@ -4,6 +4,9 @@
 A tool to sync data between Google Cloud Storage and Kafka  
 a work in progress
 
+## Running
+`docker run -it --rm -e GCS_PROJECT=X -e GCS_BUCKET=X -e KAFKA_SERVERS=X:9092 -e KAFKA_TOPIC=X richodemus/syncheror`
+
 ## Development
 Compile and run tests  
 `./gradlew`
