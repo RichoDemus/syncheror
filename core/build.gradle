@@ -1,8 +1,8 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-runtime:1.2.10'
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.2.10'
+    compile 'org.jetbrains.kotlin:kotlin-runtime:1.2.41'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.2.41'
     compile 'org.jetbrains:annotations'
 
     compile 'javax.inject:javax.inject:1'
@@ -15,8 +15,8 @@ dependencies {
 //    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.2'
 //    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.2'
 //    // jackson-module-kotlin will downgrade kotlin-reflect
-//    compile 'org.jetbrains.kotlin:kotlin-reflect:1.2.10'
-//    permitUnusedDeclared 'org.jetbrains.kotlin:kotlin-reflect:1.2.10'
+//    compile 'org.jetbrains.kotlin:kotlin-reflect:1.2.41'
+//    permitUnusedDeclared 'org.jetbrains.kotlin:kotlin-reflect:1.2.41'
 
     compile 'com.google.cloud:google-cloud-storage:1.12.0'
     compile 'com.google.api:gax'
@@ -34,6 +34,6 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.10'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41'
     }
 }
